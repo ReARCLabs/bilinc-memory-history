@@ -190,7 +190,7 @@ class Client:
             "Authorization": "Bearer " + key,
             "Content-Type": "application/json",
             "Accept": "application/json",
-            "User-Agent": "bilinc-memory-history/0.1.0",
+            "User-Agent": "bilinc-memory-history/0.1.1",
             "X-Bilinc-Client": SOURCE,
         }
         if idempotency_key:
