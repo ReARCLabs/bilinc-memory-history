@@ -490,3 +490,39 @@ class HookScriptTests(Base):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class RetentionTests(Base):
+    """README promises the newest N versions per file are kept: SessionStart applies it."""
+
+    def _versions(self, n):
+        for i in range(n):
+            self.bump(self.f("MEMORY.md"), "v%d\n" % i)
+            self.hook("Stop")
+
+    def test_session_start_prunes_to_the_configured_cap(self):
+        _write(self.f("MEMORY.md"), "v-start\n")
+        self.session_start()
+        self._versions(6)
+        self.assertEqual(len(self.entries("MEMORY.md")), 7)
+        with open(os.path.join(self.home, "config.json"), "w") as fh:
+            json.dump({"max_versions_per_file": 3}, fh)
+        with mock.patch.object(capture.time, "time", return_value=capture.time.time() + capture.PRUNE_EVERY_SECONDS + 60):
+            self.session_start()
+        es = self.entries("MEMORY.md")
+        self.assertEqual(len(es), 3)
+        self.assertEqual(self.journal().get_object(es[-1]["sha"]), b"v5\n")  # newest kept
+
+    def test_prune_runs_at_most_once_a_day(self):
+        _write(self.f("MEMORY.md"), "v-start\n")
+        self.session_start()  # first run prunes and writes the marker
+        calls = []
+        real = journal.Journal.prune
+        with mock.patch.object(journal.Journal, "prune", lambda s, *a, **k: calls.append(1) or real(s, *a, **k)):
+            self.session_start()
+            self.assertEqual(calls, [])
+            marker = os.path.join(self.home, "last-prune")
+            old = os.stat(marker).st_mtime - capture.PRUNE_EVERY_SECONDS - 5
+            os.utime(marker, (old, old))
+            self.session_start()
+        self.assertEqual(calls, [1])

@@ -1,6 +1,6 @@
 name: bilinc-memory-history
-version: 0.1.1
-description: "Version history and undo for Hermes memory (MEMORY.md and USER.md, every profile). Local only: nothing leaves your machine."
+version: 0.1.2
+description: "Version history and undo for Hermes memory (MEMORY.md and USER.md of the profile it is enabled in). Local only: nothing leaves your machine."
 author: "ReARC Labs"
 provides_hooks:
   - post_tool_call

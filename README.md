@@ -7,7 +7,7 @@ Agents now rewrite their own memory as they work, and several of them rewrite it
 | Agent | Memory it tracks | Install |
 |---|---|---|
 | [Claude Code](#claude-code) | Auto memory (`~/.claude/projects/*/memory/`) and your global `~/.claude/CLAUDE.md` | `claude plugin marketplace add ReARCLabs/bilinc-memory-history` |
-| [Hermes Agent](#hermes-agent) | `MEMORY.md` and `USER.md` of every profile | `hermes plugins install ReARCLabs/bilinc-memory-history#hermes` |
+| [Hermes Agent](#hermes-agent) | `MEMORY.md` and `USER.md` of the profile you enable it in | `hermes plugins install ReARCLabs/bilinc-memory-history#hermes` |
 
 Everything is local by default. Each agent keeps its own history in `~/.bilinc/memory-history/<agent>/`, readable by you alone.
 
@@ -93,7 +93,7 @@ No. Your memory files stay plain Markdown in Claude's own folder. The history is
 
 ### How long is history kept?
 
-The newest 200 versions of each file are kept. `/bilinc:status` shows the journal size.
+The newest 200 versions of each file are kept (checked once a day, at the start of a session). `/bilinc:status` shows the journal size.
 
 ## Hermes Agent
 

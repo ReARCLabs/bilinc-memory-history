@@ -97,7 +97,9 @@ MAX_FILES_PER_ROOT = 5000
 MAX_WATCH = 1000
 _STR_CAP = 4096
 
-DEFAULT_CONFIG = {"memory_md_max_lines": 200, "memory_md_max_kb": 25, "warn_ratio": 0.8}
+DEFAULT_CONFIG = {"memory_md_max_lines": 200, "memory_md_max_kb": 25, "warn_ratio": 0.8,
+                  "max_versions_per_file": 200}
+PRUNE_EVERY_SECONDS = 24 * 3600
 
 
 # --------------------------------------------------------------------------
@@ -499,9 +501,28 @@ def _names(rels, limit=3):
     return text
 
 
+def _maybe_prune(j, cfg):
+    """Apply the retention cap at most once a day (journal.prune does the safe part)."""
+    marker = os.path.join(str(j.store), "last-prune")
+    try:
+        if time.time() - os.stat(marker).st_mtime < PRUNE_EVERY_SECONDS:
+            return
+    except OSError:
+        pass
+    try:
+        j.prune(int(cfg.get("max_versions_per_file") or 200))
+        with paths.umask_077():
+            with open(marker, "w"):
+                pass
+        os.utime(marker, None)
+    except Exception as exc:  # retention never blocks capture
+        _warn("prune skipped (%s)" % type(exc).__name__)
+
+
 def _on_session_start(j, payload, cfg):
     units = _units()
     _reconcile(j, units)
+    _maybe_prune(j, cfg)
     slugs = _slugs_for_cwd(payload.get("cwd"))
     mine = [u for u in units if u.scope == "project" and u.slug in slugs]
     glob = [u for u in units if u.scope == "global"]

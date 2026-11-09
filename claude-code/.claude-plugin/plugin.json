@@ -1,7 +1,7 @@
 {
   "name": "bilinc",
   "displayName": "Bilinc",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Version history and undo for Claude Code memory (auto memory and your user CLAUDE.md). Local by default; Cloud is opt-in per project.",
   "author": {
     "name": "ReARC Labs",

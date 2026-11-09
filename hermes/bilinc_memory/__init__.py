@@ -3,4 +3,4 @@
 Agent-specific code lives in one module per agent (today: agent_claude_code).
 """
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
