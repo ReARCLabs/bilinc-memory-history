@@ -1,0 +1,22 @@
+{
+  "name": "bilinc",
+  "description": "Version history and undo for Claude Code memory.",
+  "owner": {
+    "name": "ReARC Labs",
+    "email": "atakan@rearclabs.com",
+    "url": "https://bilinc.space"
+  },
+  "plugins": [
+    {
+      "name": "bilinc",
+      "source": "./claude-code",
+      "description": "Version history and undo for Claude Code auto memory and your global CLAUDE.md. Local first, with optional per-project Cloud.",
+      "category": "memory",
+      "tags": ["memory", "history", "undo", "claude-md"],
+      "author": { "name": "ReARC Labs" },
+      "homepage": "https://bilinc.space",
+      "repository": "https://github.com/ReARCLabs/bilinc-memory-history",
+      "license": "MIT"
+    }
+  ]
+}

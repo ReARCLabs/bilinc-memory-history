@@ -1,0 +1,17 @@
+#!/usr/bin/env python3
+"""Entry point for the /bilinc:* skills. Run with: python3 -I scripts/bilinc_memory.py <command> ..."""
+import os
+import sys
+
+_HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(os.path.dirname(_HERE), "lib"))
+
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+except Exception:
+    pass
+
+from bilinc_memory import commands  # noqa: E402
+
+if __name__ == "__main__":
+    sys.exit(commands.main())

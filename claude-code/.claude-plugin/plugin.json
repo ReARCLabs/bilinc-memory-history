@@ -1,0 +1,23 @@
+{
+  "name": "bilinc",
+  "displayName": "Bilinc",
+  "version": "0.1.0",
+  "description": "Version history and undo for Claude Code memory (auto memory and your user CLAUDE.md). Local by default; Cloud is opt-in per project.",
+  "author": {
+    "name": "ReARC Labs",
+    "email": "atakan@rearclabs.com",
+    "url": "https://bilinc.space"
+  },
+  "homepage": "https://bilinc.space",
+  "repository": "https://github.com/ReARCLabs/bilinc-memory-history",
+  "license": "MIT",
+  "keywords": ["memory", "history", "undo", "versioning", "bilinc"],
+  "userConfig": {
+    "api_key": {
+      "type": "string",
+      "title": "Bilinc API key (optional)",
+      "description": "Only needed if you turn on Bilinc Cloud for a project. Leave empty to stay fully local. A key saved by `bilinc login` is used as a fallback.",
+      "sensitive": true
+    }
+  }
+}
