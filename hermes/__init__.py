@@ -88,9 +88,26 @@ def _on_session_start(session_id="", **_):
     _run_hook("SessionStart", {"session_id": str(session_id or ""), "cwd": os.getcwd()})
 
 
+def _spawn_detached(event, payload):
+    """Start the hook in its own session and return at once.
+
+    Used at teardown: Hermes may be exiting (often on Ctrl-C), so nothing here
+    waits, and a second Ctrl-C cannot interrupt it. The scan finishes on its own.
+    """
+    payload = dict(payload)
+    payload["hook_event_name"] = event
+    try:
+        proc = subprocess.Popen([sys.executable, "-I", HOOK, event], env=_env(),
+                                stdin=subprocess.PIPE, stdout=subprocess.DEVNULL,
+                                stderr=subprocess.DEVNULL, start_new_session=True)
+        proc.stdin.write(json.dumps(payload).encode("utf-8"))  # small: fits the pipe buffer
+        proc.stdin.close()
+    except Exception:
+        pass
+
+
 def _on_session_finalize(session_id="", **_):
-    # Teardown: run inline so the process does not exit before the scan ends.
-    _run_hook("Stop", {"session_id": str(session_id or "")}, wait=True)
+    _spawn_detached("Stop", {"session_id": str(session_id or "")})
 
 
 def _make_handler(command):

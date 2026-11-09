@@ -352,6 +352,17 @@ class PluginTests(Base):
         time.sleep(0.3)
         self.assertEqual(self.entries(), [])
 
+    def test_finalize_returns_at_once_and_still_records(self):
+        p = self.write("MEMORY.md", MEM)
+        self.ctx.hooks["on_session_start"](session_id="s1")
+        self.wait_for(1)
+        p.write_bytes((MEM + SEP + "edited before exit").encode("utf-8"))
+        start = time.monotonic()
+        self.ctx.hooks["on_session_finalize"](session_id="s1")
+        self.assertLess(time.monotonic() - start, 0.5)  # Hermes is never kept waiting at exit
+        self.wait_for(2)
+        self.assertEqual(self.entries()[-1]["source"], "external")
+
     def test_bad_arguments_never_raise(self):
         self.assertIn("Could not read", self.ctx.commands["bilinc-history"]('"unclosed'))
         self.ctx.hooks["post_tool_call"](tool_name="memory", args=None)
