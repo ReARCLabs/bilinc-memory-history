@@ -248,6 +248,13 @@ class CommandTests(Base):
         self.assertNotIn("load limit", text)
         self.assertIn("Cloud: not available for Hermes", text)
 
+    def test_paths_under_home_are_shown_with_a_tilde(self):
+        self.seed()
+        with mock.patch.dict(os.environ, {"HOME": str(self.tmp)}):
+            code, text = self.run_cmd("history", "MEMORY.md")
+        self.assertIn("Memory folder: ~/hermes/memories", text)
+        self.assertNotIn(str(self.tmp), text)
+
     def test_global_flag_is_refused(self):
         code, text = self.run_cmd("history", "--global")
         self.assertEqual(code, 1)

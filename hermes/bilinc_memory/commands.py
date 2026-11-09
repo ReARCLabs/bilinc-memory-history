@@ -45,6 +45,15 @@ def out(text=""):
     print(text)
 
 
+def home_path(p):
+    """A path for display, with the home folder shown as ~ (keeps user names out of screenshots)."""
+    text = os.fspath(p)
+    home = os.path.expanduser("~")
+    if home and home != "/" and (text == home or text.startswith(home + os.sep)):
+        text = "~" + text[len(home):]
+    return dn(text)
+
+
 def dn(value):
     return paths.display_name(str(value))
 
@@ -449,7 +458,7 @@ def cmd_history(args, client=None):
     j = _open_journal()
     ctx, rel = _select(j, args, args.file)
     out("Bilinc history for %s" % ctx.label)
-    out("Memory folder: %s" % dn(ctx.root))
+    out("Memory folder: %s" % home_path(ctx.root))
     out(DATA_NOTE)
     out()
     if ctx.project_id is None or not _entries(ctx):
@@ -859,7 +868,7 @@ def cmd_status(args, client=None):
     j = _open_journal()
     ctx = _project_ctx(j, getattr(args, "project_dir", None))
     out("Bilinc status")
-    out("Store: %s" % dn(paths.store_dir()))
+    out("Store: %s" % home_path(paths.store_dir()))
     try:
         size = j.size_bytes()
     except Exception:
@@ -869,7 +878,7 @@ def cmd_status(args, client=None):
     out("Journal size: %s. Retention: the newest %d versions of each file are kept." % (_fmt_size(size), keep))
     out()
     out("Project: %s" % ctx.label)
-    out("Memory folder: %s" % dn(ctx.root))
+    out("Memory folder: %s" % home_path(ctx.root))
     if not ctx.root.is_dir():
         out("  The memory folder does not exist yet.")
     _status_block(ctx, "Project memory")
@@ -1226,7 +1235,7 @@ def cmd_pull(args, client=None):
         out("Could not read the Cloud project: %s" % _cloud_err(e))
         return 1
     c = _cloud_state(ctx.manifest())
-    out("Target: %s (%s)" % (ctx.label, dn(ctx.root)))
+    out("Target: %s (%s)" % (ctx.label, home_path(ctx.root)))
     if c.get("cloud_project_id") and c.get("cloud_project_id") != from_id:
         out("Note: this project is linked to Cloud project %s. Pulling from %s links it to that one instead."
             % (dn(c.get("cloud_project_id")), dn(from_id)))
@@ -1384,7 +1393,7 @@ def cmd_wipe_local(args, client=None):
         size = 0
     out("Bilinc wipe-local")
     out("This deletes the whole local journal in %s: %d project(s), %s." % (
-        dn(paths.store_dir()), len(ids), _fmt_size(size)))
+        home_path(paths.store_dir()), len(ids), _fmt_size(size)))
     out("Undo history is lost for good. Memory files and CLAUDE.md are not touched. "
         "Cloud copies are not touched.")
     if not args.yes:
